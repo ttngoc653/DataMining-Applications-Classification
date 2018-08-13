@@ -23,6 +23,9 @@ class Attribute{
 		this.domain_value = new ArrayList<>();
 		if(domain_value.indexOf("{")>=0) {
 			domain_value = domain_value.substring(1,domain_value.length()-1);
+			for (String string : domain_value.split(",")) {
+				this.domain_value.add(string);
+			}
 		}
 		System.out.println(name +" - "+domain_value);
 	}
@@ -51,7 +54,6 @@ class Data{
 
 public class ImportData {
 
-	@SuppressWarnings({ "resource", "unchecked" })
 	public static Data getDataFromFile(String file_in_name) {
 		try {
 			List<Attribute> list_att = new ArrayList<>();
