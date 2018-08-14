@@ -27,7 +27,7 @@ class Attribute{
 				this.domain_value.add(string);
 			}
 		}
-		System.out.println(name +" - "+domain_value);
+		//System.out.println(name +" - "+domain_value);
 	}
 }
 
@@ -68,7 +68,7 @@ public class ImportData {
 				else if(receive.indexOf("@data")>=0) got_data = true;
 				else if(got_data) {
 					list_value.add(receive);
-					System.out.println(receive);
+					//System.out.println(receive);
 				}
 				receive = reader.readLine();
 			}
@@ -83,7 +83,7 @@ public class ImportData {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		getDataFromFile("zoo.arff");
+		getDataFromFile("letter-train.arff");
 	}
 
 }
