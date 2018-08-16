@@ -45,26 +45,17 @@ class Decision{
 }
 
 class DecisionTree{
-	private Integer index_attribute;
 	private List<Decision> field;
-	public Integer getIndexAtribute() {
-		return index_attribute;
-	}
-	public void setIndexAttribute(Integer index_attribute) {
-		this.index_attribute = index_attribute;
-	}
 	public List<Decision> getField() {
 		return field;
 	}
 	public void setField(List<Decision> field) {
 		this.field = field;
 	}
-	public DecisionTree(Integer _index_attribute, List<Decision> _field) {
-		this.index_attribute = _index_attribute;
+	public DecisionTree(List<Decision> _field) {
 		this.field = _field;
 	}
 	public DecisionTree() {
-		this.index_attribute = -1;
 		this.field = new ArrayList<>();
 	}
 }
@@ -115,7 +106,6 @@ class AE {
 	public void addListClass(String value) {
 		this.list_class.add(new H(value));
 	}
-	
 	public H searchH(String str_class) {
 		for (int i = 0; i < this.getListClass().size(); i++) {
 			if(this.getListClass().get(i).getValue().equals(str_class)) return this.getListClass().get(i);
@@ -130,13 +120,33 @@ class AE {
 			if(this.list_class.get(i).getValue().equals(str_class)) this.list_class.get(i).upCountClass();
 		}
 	}
-}
-
-public class Process {
 	public static double log2(double x) {
         return Math.log(x)/Math.log(2.0);
     }
-	
+	public Integer countElement() {
+		Integer sum = 0;
+		for (H h : list_class)
+			sum += h.getCountClass();
+		return sum;
+	}
+	public double calculatorH() {
+		Integer sum = countElement();
+		Double calcu=0D;
+		for (H h : list_class)
+			calcu = -((double)h.getCountClass()/sum)*log2(h.getCountClass()/sum);
+		
+		return calcu;
+	}
+	public static Double calculatorAE(List<AE> list) {
+		Double calcu = 0D;
+		for (AE ae : list)
+			calcu += Double.valueOf(ae.getValue()) / ae.countElement() * ae.calculatorH(); 
+		
+		return calcu;
+	}
+}
+
+public class Process {
 	private static DecisionTree head;
 
 	@SuppressWarnings("unused")
@@ -153,8 +163,22 @@ public class Process {
 		}
 		return null;
 	}
+	
+	static Boolean linkConsider(DecisionTree _deci,DecisionTree _current, String _value_consider) {
+		for(Decision _de : _current.getField()) {
+			if(_de.getNext() == _deci) return _value_consider.split(",")[_de.getIndexAttribute()] == _de.getValue();
+			Boolean temp = linkConsider(_deci, _de.getNext(),_value_consider);
+			if(temp != null) return !temp ? false : _value_consider.split(",")[_de.getIndexAttribute()] == _de.getValue();
+		}
+		return false;
+	}
+	
+	static boolean linkConsider(DecisionTree _deci,String _value_consider) {
+		if(head == null) return true;
+		return linkConsider(_deci, head, _value_consider);
+	}
 
-	static List<AE> initCountValue(Data _data, Integer _index){
+	static List<AE> initCountValue(Data _data, Integer _index, DecisionTree _decision){
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
 		for (int i = 0; i < _data.getValue().size(); i++) {
@@ -167,23 +191,45 @@ public class Process {
 					b_temp = true;
 				}
 			}
-			if(!b_temp) temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
+			if(!b_temp && linkConsider(_decision, _data.getValue().get(i))) temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
 		}
 		return temp;
 	}
 	
 	public static DecisionTree createTreeID3(Data _data, DecisionTree _current) {
+		Double min = Double.MAX_VALUE;
+		Integer minValue = 0;
+		for (int i = 0; i < _data.getAttribute().size(); i++) {
+			initCountValue(_data, i, null);
+			if(min > AE.calculatorAE(initCountValue(_data, i, null))){
+				min = AE.calculatorAE(initCountValue(_data, i, null));
+				minValue = i;
+			}
+		}
 		
-		List<AE> list_xet = initCountValue(_data,1);
-		
+		List<AE> list_xet = initCountValue(_data, minValue, _current);
+		if(head == null) _current = new DecisionTree();
+		List<Decision> field = new ArrayList<>();
 		for (AE ae : list_xet) {
+			if(ae.getListClass().size()==1) {
+				field.add(new Decision(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
+			}else {
+				DecisionTree tree = new DecisionTree();
+				field.add(new Decision(minValue, ae.getValue(), null, createTreeID3(_data, tree)));
+			}
+		}
+		/*for (AE ae : list_xet) {
 			System.out.println(ae.getValue()+" + "+ae.getListClass().size());
 			for (H h : ae.getListClass()) {
 				System.out.println("  "+h.getValue()+" - "+h.getCountClass());
 			}
-		}
+		}*/
 		
-		return null;
+		return new DecisionTree(field);
+	}
+	
+	public static DecisionTree createTreeID3(Data _data) {
+		return createTreeID3(_data, null);
 	}
 	
 	public static void main(String[] args) {
