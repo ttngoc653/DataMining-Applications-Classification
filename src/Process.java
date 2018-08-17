@@ -73,13 +73,13 @@ class DecisionTree{
 	public static void outputID3(Decision _deci_current, String str, Data _data) {
 		for (Decision _deci : _deci_current.getNext()) {
 			System.out.println(str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
-			if(_deci.getNext()!=null)outputID3(_deci, str + "| ", _data);
+			if(_deci.getNext()!=null) outputID3(_deci, str + "| ", _data);
 		}
 	}
 	public void outputID3(Data _data) {
 		for (Decision _deci : field) {
 			System.out.println(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
-			outputID3(_deci, "| ", _data);
+			if(_deci.getNext()!=null) outputID3(_deci, "| ", _data);
 		}
 	}
 }
@@ -126,6 +126,11 @@ class AE {
 	public AE(String _value) {
 		this.value = _value;
 		this.list_class = new ArrayList<>();
+	}
+	public AE(String _value, String _result_first) {
+		this.value = _value;
+		this.list_class = new ArrayList<>();
+		this.list_class.add(new H(_result_first));
 	}
 	public void addListClass(String value) {
 		this.list_class.add(new H(value));
@@ -218,7 +223,7 @@ public class Process {
 				}
 			}
 			if(!b_temp && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
-				temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
+				temp.add(new AE(_data.getValue().get(i).split(",")[_index], _data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]));
 			}
 		}
 		return temp;
@@ -241,10 +246,10 @@ public class Process {
 		if(_deci_tree == null) _deci_tree = new DecisionTree(field);
 		for (AE ae : list_xet) {
 			if(ae.getListClass().size()==1) {
-				System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
+				// System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
 				field.add(new Decision(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
 			}else {
-				System.out.println(_str + minValue + " = " + ae.getValue());
+				// System.out.println(_str + minValue + " = " + ae.getValue());
 				Decision _tree = new Decision(minValue, ae.getValue(),null,null);
 				field.add(_tree);
 				_tree.setNext(createTreeID3(_data, _deci_tree, _tree, _str + "| "));

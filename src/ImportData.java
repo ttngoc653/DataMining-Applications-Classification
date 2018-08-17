@@ -35,6 +35,7 @@ public class ImportData {
 			List<String> list_att = new ArrayList<>();
 			List<String> list_value = new ArrayList<>();
 			BufferedReader reader = new BufferedReader(new FileReader(file_in_name));
+			
 			String receive = reader.readLine();
 			
 			for (String string : receive.split(",")) list_att.add(string);
