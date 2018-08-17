@@ -50,6 +50,10 @@ class Data{
 		this.attribute = _attribute;
 		this.value = _data;
 	}
+	public String convertAttributeName(int index) {
+		if(index < 0 || index >= this.attribute.size()) return "";
+		return this.attribute.get(index).getName();
+	}
 }
 
 public class ImportData {
