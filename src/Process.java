@@ -72,13 +72,13 @@ class DecisionTree{
 	}
 	public static void outputID3(Decision _deci_current, String str, Data _data) {
 		for (Decision _deci : _deci_current.getNext()) {
-			System.out.println(str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci == null ? "" : (": " + _deci.getResult())));
-			outputID3(_deci, str + "| ", _data);
+			System.out.println(str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
+			if(_deci.getNext()!=null)outputID3(_deci, str + "| ", _data);
 		}
 	}
 	public void outputID3(Data _data) {
 		for (Decision _deci : field) {
-			System.out.println(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci == null ? "" : (": " + _deci.getResult())));
+			System.out.println(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
 			outputID3(_deci, "| ", _data);
 		}
 	}
@@ -180,88 +180,55 @@ class AE {
 }
 
 public class Process {
-	private static DecisionTree head;
 
-	@SuppressWarnings("unused")
-	private static Decision searchResultBefore(Decision _item) {
-		for (Decision _deci : head.getField()) {
-			if(_deci == _item) return null;
-			return searchResultBefore(_item, _deci);	
-		}
-		return null;
-	}
-	private static Decision searchResultBefore(Decision _item, Decision _current) {
-		for(int i=0;i<_current.getNext().size();i++) {
-			if(_current.getNext().get(i) == _item)
-				return _current;
-			Decision temp = searchResultBefore(_item, _current.getNext().get(i));
-			if(temp!=null) return temp;
-		}
-		return null;
-	}
-	
 	static Boolean linkConsider(Decision _deci,Decision _current, String _value_consider) {
-		for(Decision _de : _current.getNext()) {
-			if(_de.getNext() == _deci) return _value_consider.split(",")[_de.getIndexAttribute()] == _de.getValue();
-			Boolean temp = linkConsider(_deci, _de,_value_consider);
-			return !temp ? false : _value_consider.split(",")[_de.getIndexAttribute()] == _de.getValue();
+		if(_current.getNext() == null) return null;
+		for(Decision _i_deci : _current.getNext()) {
+			if(_i_deci == _deci) 
+				return _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
+			Boolean temp = linkConsider(_deci, _i_deci,_value_consider);
+			if(temp != null) return !temp ? false : _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
 		}
-		return false;
+		return null;
 	}
 	
-	static boolean linkConsider(Decision _deci,String _value_consider) {
-		if(head == null) return true;
-		for (Decision _i_deci : head.getField()) {
-			if(_i_deci == _deci) return true;
-			return linkConsider(_deci, _i_deci, _value_consider);	
+	static Boolean linkConsider(DecisionTree _head, Decision _deci, String _value_consider) {
+		if(_head == null) return true;
+		for (Decision _i_deci : _head.getField()) {
+			if(_i_deci == _deci) {
+				return _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
+			}
+			Boolean _b_temp = linkConsider(_deci, _i_deci, _value_consider);
+			if(_b_temp != null)	return _b_temp;	
 		}
 		return true;
 	}
 	
-	static Integer countStep(Decision _deci, Decision _current) {
-		for (Decision _i_deci : _deci.getNext()) {
-			if(_i_deci == _deci) return 1;
-			Integer _i_count = countStep(_deci,_i_deci);
-			return _i_count > 0 ? _i_count++ : 0;
-		}
-		
-		return 0;
-	}
-	
-	static Integer countStep(Decision _deci) {
-		if(head == null) return 0;
-		for (Decision _i_deci : head.getField()) {
-			return countStep(_deci, _i_deci);	
-		} 
-		return 0;
-	}
-
-	static List<AE> initCountValue(Data _data, Integer _index, Decision _decision){
+	static List<AE> initCountValue(Data _data, DecisionTree _deci_tree, Integer _index, Decision _decision){
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
 		for (int i = 0; i < _data.getValue().size(); i++) {
 			b_temp = false;
 			for (int j = 0; j < temp.size(); j++) {
-				if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index])  && linkConsider(_decision, _data.getValue().get(i))) {
+				if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index]) && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
 					if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1])))
 						temp.get(j).addListClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
 					else temp.get(j).upCountClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
 					b_temp = true;
 				}
 			}
-			if(!b_temp && linkConsider(_decision, _data.getValue().get(i))) {
-				//System.out.println(_data.getValue().get(i) +" "+ _index +" "+ i);
+			if(!b_temp && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
 				temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
 			}
 		}
 		return temp;
 	}
 	
-	public static List<Decision> createTreeID3(Data _data, Decision _current, String _str) {
-		Double min = AE.calculatorAE(initCountValue(_data, 0, _current)), _d_temp;
+	public static List<Decision> createTreeID3(Data _data,DecisionTree _deci_tree, Decision _current, String _str) {
+		Double min = AE.calculatorAE(initCountValue(_data, _deci_tree, 0, _current)), _d_temp;
 		Integer minValue = 0;
 		for (int i = 1; i < (_data.getAttribute().size() - 1); i++) {
-			_d_temp = AE.calculatorAE(initCountValue(_data, i, _current));
+			_d_temp = AE.calculatorAE(initCountValue(_data, _deci_tree, i, _current));
 			//System.out.println(_d_temp);
 			if(min > _d_temp){
 				min = _d_temp;
@@ -269,18 +236,18 @@ public class Process {
 			}
 		}
 		
-		List<AE> list_xet = initCountValue(_data, minValue, _current);
+		List<AE> list_xet = initCountValue(_data, _deci_tree, minValue, _current);
 		List<Decision> field = new ArrayList<>();
-		if(head == null) head = new DecisionTree(field);
+		if(_deci_tree == null) _deci_tree = new DecisionTree(field);
 		for (AE ae : list_xet) {
 			if(ae.getListClass().size()==1) {
 				System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
 				field.add(new Decision(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
 			}else {
-				System.out.println(_str+minValue+" = "+ae.getValue());
-				Decision tree = new Decision(minValue, ae.getValue(),null,null);
-				field.add(tree);
-				tree.setNext(createTreeID3(_data, tree, _str + "| "));
+				System.out.println(_str + minValue + " = " + ae.getValue());
+				Decision _tree = new Decision(minValue, ae.getValue(),null,null);
+				field.add(_tree);
+				_tree.setNext(createTreeID3(_data, _deci_tree, _tree, _str + "| "));
 			}
 		}
 
@@ -288,6 +255,6 @@ public class Process {
 	}
 	
 	public static DecisionTree createTreeID3(Data _data) {
-		return new DecisionTree(createTreeID3(_data, null, ""));
+		return new DecisionTree(createTreeID3(_data, null, null, ""));
 	}
 }
