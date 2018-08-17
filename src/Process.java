@@ -153,12 +153,12 @@ class AE {
 			sum += h.getCountClass();
 		return sum;
 	}
-	public double calculatorH() {
+	public Double calculatorH() {
 		Integer sum = countElement();
 		Double calcu=0D;
-		for (H h : list_class)
-			calcu = -((double)h.getCountClass()/sum)*log2(h.getCountClass()/sum);
-		
+		for (H h : list_class) {
+			calcu = -((double)h.getCountClass()/sum)*log2((double)h.getCountClass()/sum);
+		}
 		return calcu;
 	}
 	static Integer sumValueAE(List<AE> list) {
@@ -170,9 +170,11 @@ class AE {
 	}
 	public static Double calculatorAE(List<AE> list) {
 		Double calcu = 0D;
-		for (AE ae : list)
-			calcu += Double.valueOf(ae.countElement() / sumValueAE(list)) * ae.calculatorH(); 
-		
+		for (AE ae : list) {
+			// System.out.println(ae.countElement() +" - "+ sumValueAE(list) +" - "+ ae.calculatorH());
+			
+			calcu += (double)ae.countElement() / sumValueAE(list) * ae.calculatorH(); 
+		}
 		return calcu;
 	}
 }
@@ -213,7 +215,7 @@ public class Process {
 			if(_i_deci == _deci) return true;
 			return linkConsider(_deci, _i_deci, _value_consider);	
 		}
-		return false;
+		return true;
 	}
 	
 	static Integer countStep(Decision _deci, Decision _current) {
@@ -240,47 +242,52 @@ public class Process {
 		for (int i = 0; i < _data.getValue().size(); i++) {
 			b_temp = false;
 			for (int j = 0; j < temp.size(); j++) {
-				if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index])) {
+				if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index])  && linkConsider(_decision, _data.getValue().get(i))) {
 					if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1])))
 						temp.get(j).addListClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
 					else temp.get(j).upCountClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
 					b_temp = true;
 				}
 			}
-			if(!b_temp && linkConsider(_decision, _data.getValue().get(i))) temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
+			if(!b_temp && linkConsider(_decision, _data.getValue().get(i))) {
+				//System.out.println(_data.getValue().get(i) +" "+ _index +" "+ i);
+				temp.add(new AE(_data.getValue().get(i).split(",")[_index]));
+			}
 		}
 		return temp;
 	}
 	
-	public static List<Decision> createTreeID3(Data _data, Decision _current) {
-		Double min = Double.MAX_VALUE;
-		Integer minValue = -1;
-		for (int i = 0; i < _data.getAttribute().size(); i++) {
-			//initCountValue(_data, i, null);
-			if(min > AE.calculatorAE(initCountValue(_data, i, null))){
-				min = AE.calculatorAE(initCountValue(_data, i, null));
+	public static List<Decision> createTreeID3(Data _data, Decision _current, String _str) {
+		Double min = AE.calculatorAE(initCountValue(_data, 0, _current)), _d_temp;
+		Integer minValue = 0;
+		for (int i = 1; i < (_data.getAttribute().size() - 1); i++) {
+			_d_temp = AE.calculatorAE(initCountValue(_data, i, _current));
+			//System.out.println(_d_temp);
+			if(min > _d_temp){
+				min = _d_temp;
 				minValue = i;
 			}
 		}
 		
 		List<AE> list_xet = initCountValue(_data, minValue, _current);
-		
 		List<Decision> field = new ArrayList<>();
-		
+		if(head == null) head = new DecisionTree(field);
 		for (AE ae : list_xet) {
 			if(ae.getListClass().size()==1) {
+				System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
 				field.add(new Decision(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
 			}else {
-				Decision tree = new Decision();
-				field.add(new Decision(minValue, ae.getValue(), null, createTreeID3(_data, tree)));
+				System.out.println(_str+minValue+" = "+ae.getValue());
+				Decision tree = new Decision(minValue, ae.getValue(),null,null);
+				field.add(tree);
+				tree.setNext(createTreeID3(_data, tree, _str + "| "));
 			}
 		}
 
-		if(head == null) head = new DecisionTree(field);
 		return field;
 	}
 	
 	public static DecisionTree createTreeID3(Data _data) {
-		return new DecisionTree(createTreeID3(_data, null));
+		return new DecisionTree(createTreeID3(_data, null, ""));
 	}
 }

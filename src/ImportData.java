@@ -87,7 +87,7 @@ public class ImportData {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		getDataFromFile("letter-train.arff");
+		
 	}
 
 }
