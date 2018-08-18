@@ -67,8 +67,14 @@ class Tuples{
 	}
 	public void outputDetailedAccuracyByClass() {
 		System.out.println("Class\tTP Rate\tFP Rate\tPrecision\tRecall\tF-Measure");
-		System.out.println("Yes\t" + getTruePositives() + "\t" + getFalsePositives() + "\t" + Double.valueOf((double)getTruePositives()/(getTruePositives() + getFalsePositives()))+ "\t" + Double.valueOf((double)getTruePositives()/(getTruePositives() + getFalsePositives())));
-		System.out.println("No\t" + getTrueNegatives() + "\t" + getFalseNegatives() + "\t" + Double.valueOf((double)getTrueNegatives()/(getTrueNegatives() + getFalseNegatives()))+ "\t" + Double.valueOf((double)getTrueNegatives()/(getTrueNegatives() + getFalseNegatives())));
+		System.out.println("Yes\t" + getTruePositives() + "\t" + getFalsePositives()
+			+ "\t" + Double.valueOf((double)getTruePositives()/(getTruePositives() + getFalsePositives())) 
+			+ "\t" + Double.valueOf((double)getTruePositives()/(getTruePositives() + getFalseNegatives()))
+			+ "\t" + Double.valueOf((double)2 * getTruePositives()/(3 * getTruePositives() + 2 * getFalseNegatives() +  getFalsePositives())));
+		System.out.println("No\t" + getTrueNegatives() + "\t" + getFalseNegatives() 
+			+ "\t" + Double.valueOf((double)getTrueNegatives()/(getTrueNegatives() + getFalseNegatives())) 
+			+ "\t" + Double.valueOf((double)getTrueNegatives()/(getTrueNegatives() + getFalsePositives()))
+			+ "\t" + Double.valueOf((double)2 * getTrueNegatives()/(3 * getTrueNegatives() + 2 * getFalsePositives() +  getFalseNegatives())));
 	}
 }
 
