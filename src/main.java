@@ -1,38 +1,94 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class main {
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	static Data cau1(String _file_name_in) {
+		Data _data = ImportData.getDataFromFile(_file_name_in);
+		for (int i = 0; i < _data.getAttribute().size(); i++) {
+			if(i == _data.getAttribute().size() - 1) System.out.println(_data.getAttribute().get(i));
+			System.out.print(_data.getAttribute().get(i)+",");
+		}
+		for (String _str : _data.getValue())
+			System.out.println(_str);
+		
+		return _data;
+	}
+	static void cau2(String _file_name_out, Data _data) {
 		System.out.println("=== Classifier model (full training set) ===");
-		Data _data = ImportData.getDataFromFile("example.csv");
-		// for (String string : _data.getAttribute()) System.out.println(string);
-		// for (String string : _data.getValue()) System.out.println(string);
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
-		_deci_tree.outputID3(_data);
-		_data.outputClassifiedInstances();
-		System.out.println("===Best attribute criteria===");
-		System.out.println("Entropy");
-		System.out.println("=== Detailed Accuracy By Class ===");
-		Tuples _tuple = new Tuples(_data,10);
-		_tuple.outputDetailedAccuracyByClass();
+		try {
+			FileWriter fw = new FileWriter(new File(_file_name_out));
+			fw.write("=== Classifier model (full training set) ===\n");
+			
+			_deci_tree.outputID3(_data);
+			_deci_tree.outputID3(_data, fw);
+
+			_data.outputClassifiedInstances();
+			_data.outputClassifiedInstances(fw);
+			
+			System.out.println("===Best attribute criteria===");
+			fw.write("===Best attribute criteria===\n");
+			
+			System.out.println("Entropy");
+			fw.write("Entropy\n");
+			
+			System.out.println("=== Detailed Accuracy By Class ===");
+			fw.write("=== Detailed Accuracy By Class ===\n");
+			
+			Tuples _tuple = new Tuples(_data,10);
+			_tuple.outputDetailedAccuracyByClass();
+			_tuple.outputDetailedAccuracyByClass(fw);
+			
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	static void cau3(String[] _arr_str) {	
+		Data _data = ImportData.getDataFromFile(_arr_str[1]);
+		System.out.println("=== Classifier model (full training set) ===");
+		DecisionTree _deci_tree = Process.createTreeID3(_data);
+		try {
+			FileWriter fw = new FileWriter(new File(_arr_str[2]));
+			fw.write("=== Classifier model (full training set) ===\n");
+			
+			_deci_tree.outputID3(_data);
+			_deci_tree.outputID3(_data, fw);
+	
+			_data.outputClassifiedInstances();
+			_data.outputClassifiedInstances(fw);
+			
+			System.out.println("===Best attribute criteria===");
+			fw.write("===Best attribute criteria===\n");
+			
+			System.out.println("Entropy");
+			fw.write("Entropy\n");
+			
+			System.out.println("=== Detailed Accuracy By Class ===");
+			fw.write("=== Detailed Accuracy By Class ===\n");
+			
+			Tuples _tuple = new Tuples(_data,Integer.valueOf(_arr_str[3]));
+			_tuple.outputDetailedAccuracyByClass();
+			_tuple.outputDetailedAccuracyByClass(fw);
+			
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+	static boolean isFolds(String _str) {
+		try {
+			if(Integer.parseInt(_str)>0) return true;
+		} catch (Exception e) {	}
+		return false;
+	}
+	public static void main(String[] args) {
+		cau2("model.txt", cau1("example.csv"));
+		if(args.length >= 4 && isFolds(args[3])) cau3(args);
+		else System.out.println("Wrong parameter");
 	}
 
 }
-
-/*
-sunny,		hot,	high,	weak,	no	*
-sunny,		hot,	high,	strong,	no
-overcast,	hot,	high,	weak,	yes
-rainy,		mild,	high,	weak,	yes
-rainy,		cool,	normal,	weak,	yes
-rainy,		cool,	normal,	strong,	no
-overcast,	cool,	normal,	strong,	yes
-sunny,		mild,	high,	weak,	no	*
-sunny,		cool,	normal,	weak,	yes	*
-rainy,		mild,	normal,	weak,	yes
-sunny,		mild,	normal,	strong,	yes
-overcast,	mild,	high,	strong,	yes
-overcast,	hot,	normal,	weak,	yes
-rainy,		mild,	high,	strong,	no
-
-*/

@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +23,28 @@ class DecisionTree{
 			if(_deci.getNext()!=null) outputID3(_deci, str + "| ", _data);
 		}
 	}
+	private void outputID3(DecisionOfTree _deci_current, String _str, Data _data, FileWriter fw) throws IOException {
+		for (DecisionOfTree _deci : _deci_current.getNext()) {
+			fw.write(_str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())) + "\n");
+			if(_deci.getNext()!=null) outputID3(_deci, _str + "| ", _data);
+		}
+	}
 	public void outputID3(Data _data) {
 		for (DecisionOfTree _deci : field) {
 			System.out.println(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
 			if(_deci.getNext()!=null) outputID3(_deci, "| ", _data);
+		}
+	}
+	public void outputID3(Data _data, FileWriter fw) {
+		for (DecisionOfTree _deci : field) {
+			try {
+				fw.write(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())) + "\n");
+
+				if(_deci.getNext()!=null) outputID3(_deci, "| ", _data, fw);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	private String result(String _str, DecisionOfTree _current) {

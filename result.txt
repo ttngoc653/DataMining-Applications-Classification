@@ -1,0 +1,16 @@
+=== Classifier model (full training set) ===
+﻿outlook = sunny
+| humidity = high: no
+| humidity = normal: yes
+﻿outlook = overcast: yes
+﻿outlook = rainy
+| wind = weak: yes
+| wind = strong: no
+Correctly Classified Instances		27	64.286 %
+Incorrectly Classified Instances	15	35.714 %
+===Best attribute criteria===
+Entropy
+=== Detailed Accuracy By Class ===
+Class	TP Rate	FP Rate	Precision	Recall	F-Measure
+Yes	27		0		1		1		0.667
+No	15		0		1		1		0.667
