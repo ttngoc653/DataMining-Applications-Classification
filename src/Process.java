@@ -82,6 +82,29 @@ class DecisionTree{
 			if(_deci.getNext()!=null) outputID3(_deci, "| ", _data);
 		}
 	}
+	private String result(String _str, Decision _current) {
+		for (Decision decision : _current.getNext()) {
+			if (decision.getValue().equals(_str.split(",")[decision.getIndexAttribute()])) {
+				return decision.getResult() == null ? result(_str, decision) : decision.getResult();
+			}
+		}
+		return "";
+	}
+	public String result(String _str) {
+		for (Decision decision : field) {
+			if (decision.getValue().equals(_str.split(",")[decision.getIndexAttribute()])) {
+				return decision.getResult() == null ? result(_str, decision) : decision.getResult();
+			}
+		}
+		return "";
+	}
+	public List<Boolean> resultFull(List<String> _list_value) {
+		List<Boolean> _b_result = new ArrayList<>();
+		for (String _i_str : _list_value) {
+			_b_result.add(_i_str.split(",")[_i_str.split(",").length - 1].equals(result(_i_str)));
+		}
+		return _b_result;
+	}
 }
 
 class H {
