@@ -50,21 +50,36 @@ class Tuples{
 		this._true_negatives = 0;
 		this._true_positives = 0;
 	}
-	public Tuples(List<String> _list_value, DecisionTree _deci_tree) {
-
+	public Tuples(Data _data, Integer _k_folds) {
+		this._false_negatives = 0;
+		this._false_positives = 0;
+		this._true_negatives = 0;
+		this._true_positives = 0;
+	
 		String _str_temp;
-		for (String _i_str : _list_value) {
-			_str_temp = _deci_tree.result(_i_str);
-			if(_i_str.split(",")[_i_str.split(",").length].contains("y") && _str_temp.equals(_i_str.split(",")[_i_str.split(",").length]))
-				upTruePositives();
-			else if (_i_str.split(",")[_i_str.split(",").length].contains("n") && _str_temp.equals(_i_str.split(",")[_i_str.split(",").length]))
-				upTrueNegatives();
-			else if (_i_str.split(",")[_i_str.split(",").length].contains("y") && !_str_temp.equals(_i_str.split(",")[_i_str.split(",").length]))
-				upFalsePositives();
-			else if (_i_str.split(",")[_i_str.split(",").length].contains("n") && !_str_temp.equals(_i_str.split(",")[_i_str.split(",").length]))
-				upTrueNegatives();
+		DecisionTree _deci_tree = null;
+		for (int _i_folds = 0; _i_folds < _k_folds; _i_folds++) {
+			_deci_tree = Process.createTreeID3(_data,_i_folds);
+			for (int i = Integer.valueOf(_i_folds * _data.getValue().size() / _k_folds); i < Integer.valueOf((_i_folds + 1) * _data.getValue().size() / _k_folds); i++) {
+				_str_temp = _deci_tree.result(_data.getValue().get(i));
+				if(_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1].contains("y") 
+						&& _str_temp.equals(_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1]))
+					upTruePositives();
+				else if (_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1].contains("n") 
+						&& _str_temp.equals(_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1]))
+					upTrueNegatives();
+				else if (_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1].contains("y") 
+						&& !_str_temp.equals(_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1]))
+					upFalsePositives();
+				else if (_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1].contains("n") 
+						&& !_str_temp.equals(_data.getValue().get(i).split(",")[_data.getValue().get(i).split(",").length - 1]))
+					upTrueNegatives();
+			}
+			
+			System.out.println("_______");
 		}
 	}
+	
 	public void outputDetailedAccuracyByClass() {
 		System.out.println("Class\tTP Rate\tFP Rate\tPrecision\tRecall\tF-Measure");
 		System.out.println("Yes\t" + getTruePositives() + "\t" + getFalsePositives()
