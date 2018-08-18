@@ -5,22 +5,22 @@ public class Process {
 
 	static Boolean linkConsider(DecisionOfTree _deci,DecisionOfTree _current, String _value_consider) {
 		if(_current.getNext() == null) return null;
-		for(DecisionOfTree _i_deci : _current.getNext()) {
-			if(_i_deci == _deci) 
-				return _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
-			Boolean temp = linkConsider(_deci, _i_deci,_value_consider);
-			if(temp != null) return !temp ? false : _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
+		for(int i=0;i<_current.getNext().size();i++) { 
+			if(_current.getNext().get(i).getIndexAttribute() == _deci.getIndexAttribute() && _current.getNext().get(i).getValue() == _deci.getValue()) 
+				return _value_consider.split(",")[_current.getNext().get(i).getIndexAttribute()].equals(_current.getNext().get(i).getValue());
+			Boolean temp = linkConsider(_deci, _current.getNext().get(i),_value_consider);
+			if(temp != null) return !temp ? false : _value_consider.split(",")[_current.getNext().get(i).getIndexAttribute()].equals(_current.getNext().get(i).getValue());
 		}
 		return null;
 	}
 	
 	static Boolean linkConsider(DecisionTree _head, DecisionOfTree _deci, String _value_consider) {
 		if(_head == null) return true;
-		for (DecisionOfTree _i_deci : _head.getField()) {
-			if(_i_deci == _deci) {
-				return _value_consider.split(",")[_i_deci.getIndexAttribute()].equals(_i_deci.getValue());
+		for(int i=0;i<_head.getField().size();i++) { 
+			if(_head.getField().get(i).getIndexAttribute() == _deci.getIndexAttribute() && _head.getField().get(i).getValue() == _deci.getValue()) {
+				return _value_consider.split(",")[_head.getField().get(i).getIndexAttribute()].equals(_head.getField().get(i).getValue());
 			}
-			Boolean _b_temp = linkConsider(_deci, _i_deci, _value_consider);
+			Boolean _b_temp = linkConsider(_deci, _head.getField().get(i), _value_consider);
 			if(_b_temp != null)	return _b_temp;	
 		}
 		return true;
@@ -28,22 +28,22 @@ public class Process {
 	
 	static Boolean equalDecisionBefore(DecisionOfTree _deci,DecisionOfTree _current, Integer _index) {
 		if(_current.getNext() == null) return null;
-		for(DecisionOfTree _i_deci : _current.getNext()) {
-			if(_i_deci == _deci) 
-				return _index == _i_deci.getIndexAttribute();
-			Boolean _b_temp = equalDecisionBefore(_deci, _i_deci, _index);
-			if(_b_temp != null)	return _b_temp ? _b_temp : _i_deci.getIndexAttribute() == _index;
+		for(int i=0;i<_current.getNext().size();i++) { 
+			if(_current.getNext().get(i).getIndexAttribute() == _deci.getIndexAttribute() && _current.getNext().get(i).getValue() == _deci.getValue()) 
+				return _index == _current.getNext().get(i).getIndexAttribute();
+			Boolean _b_temp = equalDecisionBefore(_deci, _current.getNext().get(i), _index);
+			if(_b_temp != null)	return _b_temp ? _b_temp : _current.getNext().get(i).getIndexAttribute() == _index;
 		}
 		return null;
 	}
 	
 	private static Boolean equalDecisionBefore(DecisionTree _deci_tree, DecisionOfTree _deci, Integer _index) {
-		if(_deci_tree == null) return false; 
-		for (DecisionOfTree _i_deci : _deci_tree.getField()) {
-			if(_i_deci == _deci) 
-				return _index == _i_deci.getIndexAttribute();
-			Boolean _b_temp = equalDecisionBefore(_deci, _i_deci, _index);
-			if(_b_temp != null)	return _b_temp ? _b_temp : _i_deci.getIndexAttribute() == _index;	
+		if(_deci_tree == null) return false;
+		for(int i=0;i<_deci_tree.getField().size();i++) { 
+			if(_deci_tree.getField().get(i).getIndexAttribute() == _deci.getIndexAttribute() && _deci_tree.getField().get(i).getValue() == _deci.getValue()) 
+				return _index == _deci_tree.getField().get(i).getIndexAttribute();
+			Boolean _b_temp = equalDecisionBefore(_deci, _deci_tree.getField().get(i), _index);
+			if(_b_temp != null)	return _b_temp ? _b_temp : _deci_tree.getField().get(i).getIndexAttribute() == _index;	
 		}
 		return false;
 	}
@@ -85,7 +85,7 @@ public class Process {
 		List<DecisionOfTree> field = new ArrayList<>();
 		if(_deci_tree == null) _deci_tree = new DecisionTree(field);
 		for (AE ae : _list_xet_min) {
-			if(ae.getListClass().size()==1) {
+			if(ae.getListClass().size() == 1) {
 				// System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
 				field.add(new DecisionOfTree(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
 			}else {
@@ -133,7 +133,6 @@ public class Process {
 		Integer minValue = -1;
 		for (int i = 0; i < (_data.getAttribute().size() - 1); i++) {
 			_list_xet = initCountValue(_data, _i_folds, _deci_tree, i, _current);
-			//System.out.println(_d_temp);
 			if(min > AE.calculatorAE(_list_xet) && !equalDecisionBefore(_deci_tree,_current, i)){
 				_list_xet_min = _list_xet;
 				min = AE.calculatorAE(_list_xet_min);

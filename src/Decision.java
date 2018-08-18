@@ -54,7 +54,4 @@ class DecisionOfTree {
 		this.result = null;
 		this.next = _next;
 	}
-	public String toString() {
-		return this.getIndexAttribute()+","+this.getValue()+","+this.getResult()+","+this.getNext().toString();
-	}
 }

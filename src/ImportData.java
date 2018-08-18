@@ -58,7 +58,7 @@ class Tuples{
 	
 		String _str_temp;
 		DecisionTree _deci_tree = null;
-		for (int _i_folds = 0; _i_folds < _k_folds; _i_folds++) {
+		for (int _i_folds = 3; _i_folds < _k_folds; _i_folds++) {
 			_deci_tree = Process.createTreeID3(_data,_i_folds);
 			for (int i = Integer.valueOf(_i_folds * _data.getValue().size() / _k_folds); i < Integer.valueOf((_i_folds + 1) * _data.getValue().size() / _k_folds); i++) {
 				_str_temp = _deci_tree.result(_data.getValue().get(i));
