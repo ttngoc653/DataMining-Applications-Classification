@@ -48,15 +48,15 @@ public class main {
 		}	
 	}
 	static void cau3(String[] _arr_str) {
-		if(!(_arr_str.length >= 4 && isFolds(_arr_str[3]))) {
+		if(!(_arr_str.length >= 3 && isFolds(_arr_str[2]))) {
 			System.out.println("Wrong parameter");
 			return;
 		}
-		DataFile _data = ImportData.getDataFromFile(_arr_str[1]);
+		DataFile _data = ImportData.getDataFromFile(_arr_str[0]);
 		System.out.println("=== Classifier model (full training set) ===");
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
 		try {
-			FileWriter fw = new FileWriter(new File(_arr_str[2]));
+			FileWriter fw = new FileWriter(new File(_arr_str[1]));
 			fw.write("=== Classifier model (full training set) ===\n");
 			
 			_deci_tree.outputID3(_data);
@@ -74,7 +74,7 @@ public class main {
 			System.out.println("=== Detailed Accuracy By Class ===");
 			fw.write("=== Detailed Accuracy By Class ===\n");
 			
-			Tuples _tuple = new Tuples(_data,Integer.valueOf(_arr_str[3]));
+			Tuples _tuple = new Tuples(_data,Integer.valueOf(_arr_str[2]));
 			_tuple.outputDetailedAccuracyByClass();
 			_tuple.outputDetailedAccuracyByClass(fw);
 			
