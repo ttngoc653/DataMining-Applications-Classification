@@ -1,21 +1,20 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class main {
-	static Data cau1(String _file_name_in) {
-		Data _data = ImportData.getDataFromFile(_file_name_in);
+	static DataFile cau1(String _file_name_in) {
+		DataFile _data = ImportData.getDataFromFile(_file_name_in);
 		for (int i = 0; i < _data.getAttribute().size(); i++) {
 			if(i == _data.getAttribute().size() - 1) System.out.println(_data.getAttribute().get(i));
 			System.out.print(_data.getAttribute().get(i)+",");
 		}
-		for (String _str : _data.getValue())
+		for (String _str : _data.getData())
 			System.out.println(_str);
 		
 		return _data;
 	}
-	static void cau2(String _file_name_out, Data _data) {
+	static void cau2(String _file_name_out, DataFile _data) {
 		System.out.println("=== Classifier model (full training set) ===");
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
 		try {
@@ -48,7 +47,7 @@ public class main {
 		}	
 	}
 	static void cau3(String[] _arr_str) {	
-		Data _data = ImportData.getDataFromFile(_arr_str[1]);
+		DataFile _data = ImportData.getDataFromFile(_arr_str[1]);
 		System.out.println("=== Classifier model (full training set) ===");
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
 		try {

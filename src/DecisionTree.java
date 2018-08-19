@@ -17,25 +17,25 @@ class DecisionTree{
 	public DecisionTree() {
 		this.field = new ArrayList<>();
 	}
-	public static void outputID3(DecisionOfTree _deci_current, String str, Data _data) {
+	public static void outputID3(DecisionOfTree _deci_current, String str, DataFile _data) {
 		for (DecisionOfTree _deci : _deci_current.getNext()) {
 			System.out.println(str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
 			if(_deci.getNext()!=null) outputID3(_deci, str + "| ", _data);
 		}
 	}
-	private void outputID3(DecisionOfTree _deci_current, String _str, Data _data, FileWriter fw) throws IOException {
+	private void outputID3(DecisionOfTree _deci_current, String _str, DataFile _data, FileWriter fw) throws IOException {
 		for (DecisionOfTree _deci : _deci_current.getNext()) {
 			fw.write(_str + _data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())) + "\n");
 			if(_deci.getNext()!=null) outputID3(_deci, _str + "| ", _data);
 		}
 	}
-	public void outputID3(Data _data) {
+	public void outputID3(DataFile _data) {
 		for (DecisionOfTree _deci : field) {
 			System.out.println(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())));
 			if(_deci.getNext()!=null) outputID3(_deci, "| ", _data);
 		}
 	}
-	public void outputID3(Data _data, FileWriter fw) {
+	public void outputID3(DataFile _data, FileWriter fw) {
 		for (DecisionOfTree _deci : field) {
 			try {
 				fw.write(_data.convertAttributeName(_deci.getIndexAttribute()) + " = " + _deci.getValue() + (_deci.getResult() == null ? "" : (": " + _deci.getResult())) + "\n");

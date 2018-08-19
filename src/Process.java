@@ -36,27 +36,27 @@ public class Process {
 		return null;
 	}
 	
-	static List<AE> initCountValue(Data _data, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
+	static List<AE> initCountValue(DataFile _data, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
-		for (int i = 0; i < _data.getValue().size(); i++) {
+		for (int i = 0; i < _data.getData().size(); i++) {
 			b_temp = false;
 			for (int j = 0; j < temp.size(); j++) {
-				if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index]) && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
-					if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1])))
-						temp.get(j).addListClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
-					else temp.get(j).upCountClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
+				if(temp.get(j).getValue().equals(_data.getData().get(i).split(",")[_index]) && linkConsider(_deci_tree, _decision, _data.getData().get(i))) {
+					if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1])))
+						temp.get(j).addListClass(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1]);
+					else temp.get(j).upCountClass(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1]);
 					b_temp = true;
 				}
 			}
-			if(!b_temp && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
-				temp.add(new AE(_data.getValue().get(i).split(",")[_index], _data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]));
+			if(!b_temp && linkConsider(_deci_tree, _decision, _data.getData().get(i))) {
+				temp.add(new AE(_data.getData().get(i).split(",")[_index], _data.getData().get(i).split(",")[_data.getAttribute().size() - 1]));
 			}
 		}
 		return temp;
 	}
 	
-	public static void createTreeID3(Data _data,DecisionOfTree _deci_tree, DecisionOfTree _current, String _str) {
+	public static void createTreeID3(DataFile _data,DecisionOfTree _deci_tree, DecisionOfTree _current) {
 		List<AE> _list_xet_min = initCountValue(_data, _deci_tree, 0, _current), _list_xet;
 		Double min = AE.calculatorAE(_list_xet_min);
 		Integer minValue = 0;
@@ -72,48 +72,46 @@ public class Process {
 		}
 		for (AE ae : _list_xet_min) {
 			if(ae.getListClass().size() == 1) {
-				// System.out.println(_str+minValue+" = "+ae.getValue()+" : "+ae.getListClass().get(0).getValue());
 				_current.getNext().add(new DecisionOfTree(minValue, ae.getValue(), ae.getListClass().get(0).getValue(), null));
 			}else {
-				// System.out.println(_str + minValue + " = " + ae.getValue());
 				DecisionOfTree _item = new DecisionOfTree(minValue, ae.getValue(),null, null);
 				_current.getNext().add(_item);
-				createTreeID3(_data, _deci_tree, _item, _str + "| ");
+				createTreeID3(_data, _deci_tree, _item);
 			}
 		}
 	}
 	
-	public static DecisionTree createTreeID3(Data _data) {
+	public static DecisionTree createTreeID3(DataFile _data) {
 		DecisionOfTree _deci = new DecisionOfTree(null, null, null, new ArrayList<>());
-		createTreeID3(_data, _deci, _deci, "");
+		createTreeID3(_data, _deci, _deci);
 		return new DecisionTree(_deci.getNext());
 	}
 	
 	// k-folds
-	static List<AE> initCountValue(Data _data, Integer _i_folds, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
+	static List<AE> initCountValue(DataFile _data, Integer _i_folds, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
-		for (int i = 0; i < _data.getValue().size(); i++) {
-			if(Integer.valueOf(_i_folds * _data.getValue().size() / 10) <= i && i <= Integer.valueOf((_i_folds + 1) * _data.getValue().size() / 10 - 1)) ;
+		for (int i = 0; i < _data.getData().size(); i++) {
+			if(Integer.valueOf(_i_folds * _data.getData().size() / 10) <= i && i <= Integer.valueOf((_i_folds + 1) * _data.getData().size() / 10 - 1)) ;
 			else {
 				b_temp = false;
 				for (int j = 0; j < temp.size(); j++) {
-					if(temp.get(j).getValue().equals(_data.getValue().get(i).split(",")[_index]) && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
-						if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1])))
-							temp.get(j).addListClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
-						else temp.get(j).upCountClass(_data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]);
+					if(temp.get(j).getValue().equals(_data.getData().get(i).split(",")[_index]) && linkConsider(_deci_tree, _decision, _data.getData().get(i))) {
+						if(!temp.get(j).getListClass().contains(temp.get(j).searchH(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1])))
+							temp.get(j).addListClass(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1]);
+						else temp.get(j).upCountClass(_data.getData().get(i).split(",")[_data.getAttribute().size() - 1]);
 						b_temp = true;
 					}
 				}
-				if(!b_temp && linkConsider(_deci_tree, _decision, _data.getValue().get(i))) {
-					temp.add(new AE(_data.getValue().get(i).split(",")[_index], _data.getValue().get(i).split(",")[_data.getAttribute().size() - 1]));
+				if(!b_temp && linkConsider(_deci_tree, _decision, _data.getData().get(i))) {
+					temp.add(new AE(_data.getData().get(i).split(",")[_index], _data.getData().get(i).split(",")[_data.getAttribute().size() - 1]));
 				}
 			}
 		}
 		return temp;
 	}
 	
-	public static void createTreeID3(Data _data, Integer _i_folds, DecisionOfTree _deci_tree, DecisionOfTree _current, String _str) {
+	public static void createTreeID3(DataFile _data, Integer _i_folds, DecisionOfTree _deci_tree, DecisionOfTree _current, String _str) {
 		List<AE> _list_xet_min = initCountValue(_data, _i_folds, _deci_tree, 0, _current), _list_xet;
 		Double min = AE.calculatorAE(_list_xet_min);
 		Integer minValue = 0;
@@ -140,7 +138,7 @@ public class Process {
 		}
 	}
 
-	public static DecisionTree createTreeID3(Data _data, Integer _i_folds) {
+	public static DecisionTree createTreeID3(DataFile _data, Integer _i_folds) {
 		DecisionOfTree _deci = new DecisionOfTree(null, null, null, new ArrayList<>());
 		createTreeID3(_data, _i_folds, _deci, _deci, "");
 		return new DecisionTree(_deci.getNext());
