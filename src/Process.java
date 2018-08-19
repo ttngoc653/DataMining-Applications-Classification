@@ -25,18 +25,7 @@ public class Process {
 		return true;
 	}
 	
-	static Boolean equalDecisionBefore(DecisionOfTree _deci,DecisionOfTree _current, Integer _index) {
-		if(_current.getNext() == null) return null;
-		for(int i=0;i<_current.getNext().size();i++) { 
-			if(_current.getNext().get(i).getIndexAttribute() == _deci.getIndexAttribute() && _current.getNext().get(i).getValue() == _deci.getValue()) 
-				return _index == _current.getNext().get(i).getIndexAttribute();
-			Boolean _b_temp = equalDecisionBefore(_deci, _current.getNext().get(i), _index);
-			if(_b_temp != null)	return _b_temp ? _b_temp : _current.getNext().get(i).getIndexAttribute() == _index;
-		}
-		return null;
-	}
-	
-	static List<AE> initCountValue(DataFile _data, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
+	static List<AE> initCountValue(DataFile _data, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision) {
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
 		for (int i = 0; i < _data.getData().size(); i++) {
@@ -88,7 +77,7 @@ public class Process {
 	}
 	
 	// k-folds
-	static List<AE> initCountValue(DataFile _data, Integer _i_folds, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision){
+	static List<AE> initCountValue(DataFile _data, Integer _i_folds, DecisionOfTree _deci_tree, Integer _index, DecisionOfTree _decision) {
 		List<AE> temp = new ArrayList<>();
 		Boolean b_temp = false;
 		for (int i = 0; i < _data.getData().size(); i++) {

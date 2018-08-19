@@ -14,7 +14,8 @@ public class main {
 		
 		return _data;
 	}
-	static void cau2(String _file_name_out, DataFile _data) {
+	static void cau2(String _file_name_in, String _file_name_out) {
+		DataFile _data = ImportData.getDataFromFile(_file_name_in);
 		System.out.println("=== Classifier model (full training set) ===");
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
 		try {
@@ -46,7 +47,11 @@ public class main {
 			e.printStackTrace();
 		}	
 	}
-	static void cau3(String[] _arr_str) {	
+	static void cau3(String[] _arr_str) {
+		if(!(_arr_str.length >= 4 && isFolds(_arr_str[3]))) {
+			System.out.println("Wrong parameter");
+			return;
+		}
 		DataFile _data = ImportData.getDataFromFile(_arr_str[1]);
 		System.out.println("=== Classifier model (full training set) ===");
 		DecisionTree _deci_tree = Process.createTreeID3(_data);
@@ -78,6 +83,7 @@ public class main {
 			e.printStackTrace();
 		}	
 	}
+	
 	static boolean isFolds(String _str) {
 		try {
 			if(Integer.parseInt(_str)>0) return true;
@@ -85,9 +91,9 @@ public class main {
 		return false;
 	}
 	public static void main(String[] args) {
-		cau2("model.txt", cau1("example.csv"));
-		if(args.length >= 4 && isFolds(args[3])) cau3(args);
-		else System.out.println("Wrong parameter");
+		// cau1("example.csv");
+		// cau2("example.csv", "model.txt");
+		// cau3(args);
 	}
 
 }
